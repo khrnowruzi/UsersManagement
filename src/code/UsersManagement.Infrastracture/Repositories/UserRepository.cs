@@ -16,6 +16,7 @@ namespace UsersManagement.Infrastracture.Repositories
 
         public async Task<User> CreateAsync(User user)
         {
+            user.CreateDate = DateTime.Now;
             var addedUser = await _dbContext.Users.AddAsync(user);
             return addedUser.Entity;
         }
@@ -28,6 +29,7 @@ namespace UsersManagement.Infrastracture.Repositories
                 userFromDb.FirstName = user.FirstName;
                 userFromDb.LastName = user.LastName;
                 userFromDb.Birthday = user.Birthday;
+                userFromDb.CreateDate = user.CreateDate;
 
                 _dbContext.Users.Update(user);
                 return userFromDb;
