@@ -1,8 +1,8 @@
 ﻿using UsersManagement.Core.Entities;
 
-namespace UsersManagement.Core.Interfaces.IRepository
+namespace UsersManagement.Application.Services
 {
-    public interface IUserRepository
+    public interface IUserService
     {
         Task<User> CreateAsync(User user);
         Task<User> UpdateAsync(User user);

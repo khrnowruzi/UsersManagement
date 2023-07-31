@@ -48,13 +48,13 @@ namespace UsersManagement.Infrastracture.Repositories
             return 0;
         }
 
-        public async Task<User> Get(int id)
+        public async Task<User> GetAsync(int id)
         {
             var userFromDb = await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == id);
             return userFromDb ?? new User();
         }
 
-        public async Task<IEnumerable<User>> GetAll()
+        public async Task<IEnumerable<User>> GetAllAsync()
         {
             return await _dbContext.Users.ToListAsync();
         }
