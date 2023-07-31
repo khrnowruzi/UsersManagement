@@ -1,4 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System.Net;
 using UsersManagement.Core.Entities;
 using UsersManagement.Core.Interfaces.IRepository;
 using UsersManagement.Infrastracture.Data;
@@ -23,40 +25,36 @@ namespace UsersManagement.Infrastracture.Repositories
 
         public async Task<User> UpdateAsync(User user)
         {
-            var userFromDb = await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == user.Id);
-            if (userFromDb != null)
-            {
-                userFromDb.FirstName = user.FirstName;
-                userFromDb.LastName = user.LastName;
-                userFromDb.Birthday = user.Birthday;
-                userFromDb.CreateDate = user.CreateDate;
-
-                _dbContext.Users.Update(user);
-                return userFromDb;
-            }
-            return user;
+            var userFromDb = await _dbContext.Users.FindAsync(user.Id);
+            if (userFromDb == null)
+                throw new Exception("User not found!");
+            userFromDb.FirstName = user.FirstName;
+            userFromDb.LastName = user.LastName;
+            userFromDb.Birthday = user.Birthday;
+            _dbContext.Users.Update(userFromDb);
+            return userFromDb;
         }
 
         public async Task<int> DeleteAsync(int id)
         {
-            var userFromDb = await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == id);
-            if (userFromDb != null)
-            {
-                _dbContext.Users.Remove(userFromDb);
-                return 1;
-            }
-            return 0;
+            var userFromDb = await _dbContext.Users.FindAsync(id);
+            if (userFromDb == null)
+                throw new Exception("User not found!");
+            _dbContext.Users.Remove(userFromDb);
+            return 1;
         }
 
         public async Task<User> GetAsync(int id)
         {
-            var userFromDb = await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == id);
-            return userFromDb ?? new User();
+            var userFromDb = await _dbContext.Users.FindAsync(id);
+            if (userFromDb == null)
+                throw new Exception("User not found!");
+            return userFromDb;
         }
 
         public async Task<IEnumerable<User>> GetAllAsync()
         {
-            return await _dbContext.Users.ToListAsync();
+            return await _dbContext.Users.AsNoTracking().ToListAsync();
         }
     }
 }

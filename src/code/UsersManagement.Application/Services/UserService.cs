@@ -20,7 +20,6 @@ namespace UsersManagement.Application.Services
             var addedUser = await _userRepository.CreateAsync(user);
             await _unitOfWork.Complete();
             return addedUser;
-
         }
 
         public async Task<User> UpdateAsync(User user)

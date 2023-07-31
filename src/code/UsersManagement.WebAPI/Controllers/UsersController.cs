@@ -23,55 +23,93 @@ namespace UsersManagement.WebAPI.Controllers
             return Ok(_mapper.Map<IEnumerable<User>, IEnumerable<UserDTO>>(await _userService.GetAllAsync()));
         }
 
-        [HttpGet($"{nameof(GetUser)}/userId")]
+        [HttpPost("GetUser/{userId}", Name = nameof(GetUser))]
         public async Task<IActionResult> GetUser(int? userId)
         {
-            if (userId == null || userId < 0)
+            if (!userId.HasValue || userId < 0)
             {
-                return Status400BadRequest("Invalid Id!");
+                return BadRequest(new ErrorDTO
+                {
+                    StatusCode = StatusCodes.Status400BadRequest,
+                    ErrorMessage = "Invalid Id!"
+                });
             }
 
-            var user = await _userService.GetAsync(userId.Value);
-
-            if (user == null)
+            try
             {
-                return Status400BadRequest("User not found!");
+                var user = await _userService.GetAsync(userId.Value);
+                return Ok(_mapper.Map<User, UserDTO>(user));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ErrorDTO
+                {
+                    StatusCode = StatusCodes.Status400BadRequest,
+                    ErrorMessage = ex.Message
+                });
             }
 
-            return Ok(_mapper.Map<User, UserDTO>(user));
         }
 
-        [HttpPost]
+        [HttpPost(nameof(AddUser))]
         public async Task<IActionResult> AddUser([FromForm] UserDTO user)
         {
-            return Ok(await _userService.CreateAsync(_mapper.Map<UserDTO, User>(user)));
+            user.Id = 0;
+            var addedUser = await _userService.CreateAsync(_mapper.Map<UserDTO, User>(user));
+            return Ok(_mapper.Map<User, UserDTO>(addedUser));
         }
 
-        [HttpPost]
-        public async Task<IActionResult> EditUser([FromForm] UserDTO user)
+        [HttpPut("EditUser/{userId}", Name = nameof(EditUser))]
+        public async Task<IActionResult> EditUser(int? userId, [FromForm] UserDTO user)
         {
-            return Ok(await _userService.UpdateAsync(_mapper.Map<UserDTO, User>(user)));
-        }
-
-        [HttpPost($"{nameof(DeleteUser)}/userId")]
-        public async Task<IActionResult> DeleteUser(int? userId)
-        {
-            if (userId == null || userId < 0)
+            if (!userId.HasValue || userId < 0)
             {
-                return Status400BadRequest("Invalid Id!");
+                return BadRequest(new ErrorDTO
+                {
+                    StatusCode = StatusCodes.Status400BadRequest,
+                    ErrorMessage = "Invalid Id!"
+                });
             }
 
-            return Ok(await _userService.DeleteAsync(userId.Value));
+            try
+            {
+                var updatedUser = await _userService.UpdateAsync(_mapper.Map<UserDTO, User>(user));
+                return Ok(_mapper.Map<User, UserDTO>(updatedUser));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ErrorDTO
+                {
+                    StatusCode = StatusCodes.Status400BadRequest,
+                    ErrorMessage = ex.Message
+                });
+            }
         }
 
-        //Helper methods
-        public BadRequestObjectResult Status400BadRequest(string message)
+        [HttpPost("DeleteUser/{userId}", Name = nameof(DeleteUser))]
+        public async Task<IActionResult> DeleteUser(int? userId)
         {
-            return BadRequest(new ErrorDTO
+            if (!userId.HasValue || userId < 0)
             {
-                StatusCode = StatusCodes.Status400BadRequest,
-                ErrorMessage = message
-            });
+                return BadRequest(new ErrorDTO
+                {
+                    StatusCode = StatusCodes.Status400BadRequest,
+                    ErrorMessage = "Invalid Id!"
+                });
+            }
+
+            try
+            {
+                return Ok(await _userService.DeleteAsync(userId.Value));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ErrorDTO
+                {
+                    StatusCode = StatusCodes.Status400BadRequest,
+                    ErrorMessage = ex.Message
+                });
+            }
         }
     }
 }
