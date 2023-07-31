@@ -1,6 +1,6 @@
 ﻿namespace UsersManagement.WebAPI.Dtos
 {
-    public class UserDto
+    public class UserDTO
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }

@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="12.0.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -15,6 +16,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\UsersManagement.Application\UsersManagement.Application.csproj" />
+    <ProjectReference Include="..\UsersManagement.Core\UsersManagement.Core.csproj" />
     <ProjectReference Include="..\UsersManagement.Infrastracture\UsersManagement.Infrastracture.csproj" />
   </ItemGroup>
 
