@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using UsersManagement.Infrastracture.Data;
+using UsersManagement.WebAPI.Extensions;
+using UsersManagement.WebAPI.Helpers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,6 +9,16 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+});
+builder.Services.AddApplicationServices();
+builder.Services.AddAutoMapper(typeof(MappingProfiles));
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("CorsPolicy", policy =>
+    {
+        policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
+    });
 });
 
 builder.Services.AddControllers();
@@ -22,6 +34,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseCors("CorsPolicy");
 
 app.UseAuthorization();
 
